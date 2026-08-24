@@ -64,4 +64,3 @@ async def register_webhook(webhook_url: str, secret_token: str) -> dict:
             },
         )
     return resp.json()
-
