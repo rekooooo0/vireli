@@ -1,0 +1,205 @@
+.wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--v-space-2) var(--v-space-5) calc(var(--v-space-6) + var(--tg-safe-bottom));
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--v-space-3);
+  margin-bottom: var(--v-space-5);
+}
+
+.backBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--v-surface);
+  border: 1px solid var(--v-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.dropzone {
+  position: relative;
+  border-radius: var(--v-radius-lg);
+  border: 1.5px dashed var(--v-border);
+  background: var(--v-surface);
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--v-space-2);
+  overflow: hidden;
+  margin-bottom: var(--v-space-5);
+}
+
+.dropzonePreview {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.dropzoneIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--v-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.dropzoneLabel {
+  font-family: var(--v-font-display);
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.dropzoneHint {
+  font-size: 12px;
+  color: var(--v-text-faint);
+}
+
+.fileInput {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.changePhoto {
+  position: absolute;
+  bottom: var(--v-space-3);
+  right: var(--v-space-3);
+  padding: 8px 14px;
+  border-radius: var(--v-radius-pill);
+  background: rgba(11, 10, 18, 0.65);
+  backdrop-filter: blur(6px);
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  z-index: 2;
+}
+
+.sectionLabel {
+  font-family: var(--v-font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--v-text-dim);
+  margin-bottom: var(--v-space-3);
+}
+
+.toolGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--v-space-3);
+  margin-bottom: var(--v-space-5);
+}
+
+.toolCard {
+  padding: var(--v-space-4);
+  border-radius: var(--v-radius-md);
+  background: var(--v-surface);
+  border: 1.5px solid var(--v-border);
+  text-align: left;
+  transition: border-color var(--v-fast) var(--v-ease), background var(--v-fast) var(--v-ease);
+}
+
+.toolCardActive {
+  border-color: var(--v-violet);
+  background: var(--v-surface-raised);
+}
+
+.toolCardTitle {
+  font-family: var(--v-font-display);
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.toolCardHint {
+  font-size: 11px;
+  color: var(--v-text-faint);
+}
+
+.styleRow {
+  display: flex;
+  gap: var(--v-space-2);
+  overflow-x: auto;
+  padding-bottom: var(--v-space-2);
+  margin-bottom: var(--v-space-5);
+  scrollbar-width: none;
+}
+
+.styleRow::-webkit-scrollbar {
+  display: none;
+}
+
+.stylePill {
+  flex-shrink: 0;
+  padding: 10px 16px;
+  border-radius: var(--v-radius-pill);
+  background: var(--v-surface);
+  border: 1.5px solid var(--v-border);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--v-text-dim);
+  transition: all var(--v-fast) var(--v-ease);
+}
+
+.stylePillActive {
+  border-color: transparent;
+  background: var(--v-gradient);
+  color: #fff;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.generateBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  border-radius: var(--v-radius-md);
+  background: var(--v-gradient);
+  color: #fff;
+  font-family: var(--v-font-display);
+  font-size: 16px;
+  font-weight: 700;
+  transition: opacity var(--v-fast) var(--v-ease), transform var(--v-fast) var(--v-ease);
+}
+
+.generateBtn:active {
+  transform: scale(0.97);
+}
+
+.generateBtn:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.errorNotice {
+  margin-bottom: var(--v-space-3);
+  padding: var(--v-space-3) var(--v-space-4);
+  border-radius: var(--v-radius-md);
+  background: rgba(255, 84, 112, 0.1);
+  border: 1px solid rgba(255, 84, 112, 0.25);
+  color: #ffb3c0;
+  font-size: 13px;
+}

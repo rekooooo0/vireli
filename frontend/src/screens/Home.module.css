@@ -1,0 +1,180 @@
+.wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--v-space-2) var(--v-space-5) calc(var(--v-space-6) + var(--tg-safe-bottom));
+}
+
+.hero {
+  margin-top: var(--v-space-5);
+  margin-bottom: var(--v-space-6);
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--v-text-faint);
+  margin-bottom: var(--v-space-2);
+}
+
+.title {
+  font-size: 34px;
+  line-height: 1.08;
+  font-weight: 700;
+  max-width: 280px;
+}
+
+.titleGradient {
+  background: var(--v-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  margin-top: var(--v-space-3);
+  color: var(--v-text-dim);
+  font-size: 15px;
+  line-height: 1.5;
+  max-width: 300px;
+}
+
+/* Signature element: a diagonal split "before / after" card that embodies
+   "a photo becomes content" without literally showing a stock photo. */
+.signature {
+  position: relative;
+  height: 190px;
+  border-radius: var(--v-radius-lg);
+  overflow: hidden;
+  margin-bottom: var(--v-space-6);
+  background: var(--v-surface);
+  border: 1px solid var(--v-border);
+  isolation: isolate;
+}
+
+.signatureHalf {
+  position: absolute;
+  inset: 0;
+}
+
+.signatureBefore {
+  background: #1a1826;
+  clip-path: polygon(0 0, 62% 0, 38% 100%, 0 100%);
+}
+
+.signatureBefore::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.07) 1px, transparent 0);
+  background-size: 14px 14px;
+}
+
+.signatureAfter {
+  background: var(--v-gradient);
+  clip-path: polygon(62% 0, 100% 0, 100% 100%, 38% 100%);
+}
+
+.signatureAfter::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 75% 30%, rgba(255, 255, 255, 0.35), transparent 55%);
+}
+
+.signatureLabel {
+  position: absolute;
+  bottom: var(--v-space-4);
+  font-family: var(--v-font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: var(--v-radius-pill);
+  background: rgba(11, 10, 18, 0.55);
+  backdrop-filter: blur(6px);
+}
+
+.labelBefore {
+  left: var(--v-space-4);
+  color: var(--v-text-dim);
+}
+
+.labelAfter {
+  right: var(--v-space-4);
+  color: #fff;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v-space-3);
+}
+
+.primaryAction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px;
+  border-radius: var(--v-radius-md);
+  background: var(--v-gradient);
+  color: #fff;
+  font-family: var(--v-font-display);
+  font-size: 17px;
+  font-weight: 700;
+  transition: transform var(--v-fast) var(--v-ease), opacity var(--v-fast) var(--v-ease);
+}
+
+.primaryAction:active {
+  transform: scale(0.97);
+}
+
+.secondaryRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--v-space-3);
+}
+
+.secondaryAction {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  padding: var(--v-space-4);
+  border-radius: var(--v-radius-md);
+  background: var(--v-surface);
+  border: 1px solid var(--v-border);
+  transition: border-color var(--v-fast) var(--v-ease), transform var(--v-fast) var(--v-ease);
+  text-align: left;
+}
+
+.secondaryAction:active {
+  transform: scale(0.97);
+  border-color: var(--v-violet);
+}
+
+.secondaryLabel {
+  font-family: var(--v-font-display);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.secondaryHint {
+  font-size: 12px;
+  color: var(--v-text-faint);
+}
+
+.offlineNotice {
+  margin-top: var(--v-space-5);
+  padding: var(--v-space-3) var(--v-space-4);
+  border-radius: var(--v-radius-md);
+  background: rgba(255, 84, 112, 0.1);
+  border: 1px solid rgba(255, 84, 112, 0.25);
+  color: #ffb3c0;
+  font-size: 13px;
+  line-height: 1.5;
+}

@@ -1,0 +1,134 @@
+/*
+  Vireli design tokens.
+
+  Concept: a photo becomes content. The signature visual idea across
+  the app is a diagonal "before/after" split — one plain, one lit up —
+  echoed in the wordmark treatment, the Create button and empty states.
+
+  Palette: deep ink-violet base (a Telegram Mini App lives inside a dark
+  webview most of the time) with a two-stop transformation gradient
+  (violet -> coral) reserved for the one primary action per screen.
+  Credits use a separate warm amber so "currency" never competes
+  visually with "create".
+*/
+
+:root {
+  /* --- Color: base --- */
+  --v-bg: #0b0a12;
+  --v-surface: #16141f;
+  --v-surface-raised: #1f1c2c;
+  --v-border: #2a2738;
+  --v-border-soft: #201d2c;
+
+  /* --- Color: text --- */
+  --v-text: #f3f1fa;
+  --v-text-dim: #a49fc0;
+  --v-text-faint: #6d6889;
+
+  /* --- Color: transformation gradient (the one signature accent) --- */
+  --v-violet: #7c5cfc;
+  --v-coral: #ff6b8b;
+  --v-gradient: linear-gradient(115deg, var(--v-violet) 0%, #b45cf7 45%, var(--v-coral) 100%);
+
+  /* --- Color: credits / currency --- */
+  --v-amber: #ffb020;
+
+  /* --- Color: state --- */
+  --v-danger: #ff5470;
+  --v-success: #4ade80;
+
+  /* --- Type --- */
+  --v-font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --v-font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* --- Radius --- */
+  --v-radius-sm: 10px;
+  --v-radius-md: 16px;
+  --v-radius-lg: 24px;
+  --v-radius-pill: 999px;
+
+  /* --- Spacing scale --- */
+  --v-space-1: 4px;
+  --v-space-2: 8px;
+  --v-space-3: 12px;
+  --v-space-4: 16px;
+  --v-space-5: 24px;
+  --v-space-6: 32px;
+  --v-space-7: 48px;
+
+  /* --- Motion --- */
+  --v-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --v-fast: 140ms;
+  --v-medium: 260ms;
+
+  /* Telegram safe-area insets (populated by webapp.ts) */
+  --tg-safe-top: env(safe-area-inset-top, 0px);
+  --tg-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--v-bg);
+  color: var(--v-text);
+  font-family: var(--v-font-body);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+body {
+  min-height: 100dvh;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--v-font-display);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  font-family: var(--v-font-body);
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+[tabindex]:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--v-violet);
+  outline-offset: 2px;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,37 @@
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(var(--tg-safe-top) + var(--v-space-3)) var(--v-space-5) var(--v-space-3);
+}
+
+.wordmark {
+  font-family: var(--v-font-display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: var(--v-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.credits {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--v-radius-pill);
+  background: var(--v-surface-raised);
+  border: 1px solid var(--v-border);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--v-amber);
+}
+
+.creditsDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--v-amber);
+}
