@@ -18,6 +18,14 @@ class Settings(BaseSettings):
 
     # --- Telegram ---
     telegram_bot_token: str = ""
+    # The deployed Mini App URL (GitHub Pages), e.g. https://user.github.io/vireli/
+    # Sent to users as the "Open App" button target on /start.
+    telegram_webapp_url: str = ""
+    # Random secret registered with Telegram's setWebhook (secret_token param).
+    # Telegram echoes it back on every webhook call as the
+    # X-Telegram-Bot-Api-Secret-Token header, so we can reject requests that
+    # don't have it instead of trusting anyone who finds our webhook URL.
+    telegram_webhook_secret: str = ""
 
     # --- Supabase ---
     supabase_url: str = ""
@@ -45,3 +53,4 @@ def get_settings() -> Settings:
     everywhere in the app, so environment variables are read once.
     """
     return Settings()
+
