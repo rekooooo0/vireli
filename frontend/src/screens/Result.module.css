@@ -101,6 +101,23 @@
   color: var(--v-text-dim);
 }
 
+.captionCard {
+  padding: var(--v-space-5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--v-text);
+}
+
+.errorText {
+  margin: -8px 0 var(--v-space-5);
+  font-size: 13px;
+  color: var(--v-danger);
+}
+
 .spacer {
   flex: 1;
 }

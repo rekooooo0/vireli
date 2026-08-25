@@ -68,6 +68,10 @@ class Generation(Base):
         index=True,
     )
     input_file_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Storage path for image tools (enhance/remove_bg/style). For `caption`
+    # generations there's no output image, so this column holds the raw
+    # caption text instead - see api/generations.py::_serialize, which
+    # knows to treat it as text vs. a signed-URL path based on gen.type.
     output_file_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     credits_spent: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)

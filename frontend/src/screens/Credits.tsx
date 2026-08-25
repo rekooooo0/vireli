@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
 import styles from "./Lists.module.css";
 import type { Screen } from "../types/nav";
-import { getCreditsBalance, subscribe } from "../api/mockGenerations";
+import { useGenerations } from "../state/GenerationsContext";
 
 interface Props {
   navigate: (s: Screen) => void;
@@ -15,9 +14,7 @@ const PLANS = [
 ];
 
 export function Credits({ navigate }: Props) {
-  const [balance, setBalance] = useState(getCreditsBalance());
-
-  useEffect(() => subscribe(() => setBalance(getCreditsBalance())), []);
+  const { credits } = useGenerations();
 
   return (
     <div className={styles.wrap}>
@@ -30,7 +27,7 @@ export function Credits({ navigate }: Props) {
 
       <div className={styles.balanceCard}>
         <div className={styles.balanceLabel}>Баланс</div>
-        <div className={styles.balanceValue}>{balance}</div>
+        <div className={styles.balanceValue}>{credits}</div>
       </div>
 
       <div className={styles.planList}>

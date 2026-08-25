@@ -6,7 +6,7 @@ import { MyCreations } from "./screens/MyCreations";
 import { Credits } from "./screens/Credits";
 import { TopBar } from "./components/TopBar";
 import type { Screen } from "./types/nav";
-import { getCreditsBalance, subscribe } from "./api/mockGenerations";
+import { GenerationsProvider, useGenerations } from "./state/GenerationsContext";
 import { getInitData, initTelegramWebApp, isInsideTelegram, setBackButton } from "./telegram/webapp";
 import { verifyTelegramUser } from "./api/client";
 
@@ -16,14 +16,13 @@ type AuthState =
   | { status: "skipped" } // not inside Telegram (e.g. dev browser preview)
   | { status: "failed"; message: string };
 
-export default function App() {
+function AppShell() {
   const [screen, setScreen] = useState<Screen>({ name: "home" });
-  const [credits, setCredits] = useState(getCreditsBalance());
   const [auth, setAuth] = useState<AuthState>({ status: "checking" });
+  const { credits, refreshCredits, refreshGenerations } = useGenerations();
 
   useEffect(() => {
     initTelegramWebApp();
-    return subscribe(() => setCredits(getCreditsBalance()));
   }, []);
 
   useEffect(() => {
@@ -32,9 +31,15 @@ export default function App() {
       return;
     }
     verifyTelegramUser(getInitData())
-      .then((res) => setAuth({ status: "verified", telegramId: res.telegram_id }))
+      .then((res) => {
+        setAuth({ status: "verified", telegramId: res.telegram_id });
+        // Auth also creates the user server-side, so it's safe to load
+        // credits/history right after it succeeds.
+        refreshCredits().catch(() => {});
+        refreshGenerations().catch(() => {});
+      })
       .catch((err) => setAuth({ status: "failed", message: err.message ?? "Не удалось проверить пользователя" }));
-  }, []);
+  }, [refreshCredits, refreshGenerations]);
 
   useEffect(() => {
     if (screen.name === "home") {
@@ -71,5 +76,13 @@ export default function App() {
       {screen.name === "my-creations" && <MyCreations navigate={setScreen} />}
       {screen.name === "credits" && <Credits navigate={setScreen} />}
     </>
+  );
+}
+
+export default function App() {
+  return (
+    <GenerationsProvider>
+      <AppShell />
+    </GenerationsProvider>
   );
 }

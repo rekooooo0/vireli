@@ -1,6 +1,8 @@
 # Vireli — AI Content Studio (Telegram Mini App)
 
-MVP в разработке. Текущий этап: **Stage 3 — frontend-скелет**.
+MVP в разработке. Текущий этап: **Stage 4 — реальные генерации** (backend теперь
+принимает фото, списывает кредиты и обрабатывает их через AI-провайдера;
+заглушка `mockGenerations.ts` удалена).
 
 ## Структура
 
@@ -13,24 +15,46 @@ vireli/
 └── .gitignore
 ```
 
-## Важно: что во frontend реальное, а что заглушка
+## Что реально работает (Stage 4)
 
-Backend пока реализует только `/api/health`, `/api/health/db` и
-`/api/auth/telegram/verify-test`. Поэтому во frontend:
+Backend реализует полный цикл:
 
-- **Реально работает**: проверка Telegram-пользователя — frontend
-  отправляет подписанный `initData` на backend, backend проверяет подпись
-  через bot token (см. `backend/app/core/security.py`).
-- **Заглушка (`frontend/src/api/mockGenerations.ts`)**: загрузка фото,
-  генерация, кредиты, история — всё это живёт только в памяти браузера,
-  ничего не отправляется на backend и никуда не сохраняется. Это позволяет
-  уже сейчас пройти весь сценарий Create → Result → My Creations → Credits
-  и увидеть, как будет выглядеть готовое приложение.
+- `POST /api/auth/telegram` — проверяет подписанный `initData`, создаёт
+  пользователя в Supabase при первом визите и выдаёт стартовые 5 кредитов.
+- `GET /api/credits` — текущий баланс.
+- `POST /api/generations` — принимает фото (multipart), проверяет баланс,
+  загружает фото в приватный Supabase Storage bucket `generations`,
+  списывает 1 кредит и **в фоне** отправляет изображение AI-провайдеру
+  (см. `backend/app/services/ai.py`):
+  - `enhance`, `remove_bg`, `style` — Hugging Face Inference API
+    (`HUGGINGFACE_API_TOKEN`);
+  - `caption` — OpenRouter, vision-модель (`OPENROUTER_API_KEY`).
+  Если провайдер не настроен или упал с ошибкой — генерация помечается
+  `failed`, кредит **автоматически возвращается** пользователю.
+- `GET /api/generations` / `GET /api/generations/{id}` — список и статус
+  (frontend поллит `{id}` каждые 1.5с, пока статус не станет `completed`
+  или `failed`).
 
-Когда на backend появятся `POST /api/generations`, `GET /api/generations`,
-`GET /api/credits` — вызовы в экранах `Create.tsx`, `Result.tsx`,
-`MyCreations.tsx`, `Credits.tsx` нужно будет заменить на реальные из
-`frontend/src/api/client.ts`.
+Frontend (`frontend/src/state/GenerationsContext.tsx`) полностью перешёл
+на эти реальные вызовы — заглушка `mockGenerations.ts` удалена.
+
+### Известные ограничения / что доделать дальше
+
+- Модели в `HF_MODELS` (`backend/app/services/ai.py`) выбраны как рабочая
+  отправная точка — стоит проверить качество результата под реальные
+  кейсы и, если нужно, заменить на другие модели/провайдера (в т.ч.
+  Sber Kandinsky/GigaChat — `SBER_AUTH_KEY` пока зарезервирован, но не
+  подключен).
+  Убедитесь, что в вашем HF-аккаунте включён доступ к Inference API для
+  выбранных моделей, а провайдер OpenRouter имеет баланс для запросов к
+  выбранной vision-модели.
+- В Supabase нужно один раз создать приватный bucket `generations`
+  (Storage → New bucket → имя `generations`, Public: **off**).
+- Обработка идёт в background task в рамках того же процесса — если
+  Render перезапустит инстанс backend прямо во время генерации, она
+  зависнет в статусе `processing`. Для продакшена стоит вынести это в
+  отдельную очередь (например, Celery/RQ + Redis), но для MVP это
+  избыточно.
 
 ## Быстрый старт (backend)
 

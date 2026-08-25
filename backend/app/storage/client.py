@@ -54,3 +54,10 @@ def get_signed_url(path: str, expires_in_seconds: int = 3600) -> str:
     client = get_storage_client()
     result = client.storage.from_(BUCKET_NAME).create_signed_url(path, expires_in_seconds)
     return result["signedURL"]
+
+
+def download_image(path: str) -> bytes:
+    """Downloads raw image bytes from the private bucket - used by the
+    background worker to feed the input image to an AI provider."""
+    client = get_storage_client()
+    return client.storage.from_(BUCKET_NAME).download(path)

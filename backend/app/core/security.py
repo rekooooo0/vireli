@@ -57,7 +57,10 @@ def verify_telegram_init_data(init_data: str) -> TelegramUser:
         # Fail loudly in any environment - this must always be configured.
         raise InvalidInitDataError("Server misconfiguration: bot token not set")
 
-    pairs = dict(parse_qsl(init_data, strict_parsing=True))
+    try:
+        pairs = dict(parse_qsl(init_data, strict_parsing=True))
+    except ValueError as exc:
+        raise InvalidInitDataError("Malformed initData") from exc
 
     received_hash = pairs.pop("hash", None)
     if not received_hash:

@@ -2,7 +2,8 @@ import { useRef, useState } from "react";
 import styles from "./Create.module.css";
 import type { Screen } from "../types/nav";
 import { STYLE_PRESETS } from "../types/nav";
-import { createMockGeneration, hasEnoughCredits, type ToolType } from "../api/mockGenerations";
+import type { ToolType } from "../api/client";
+import { useGenerations } from "../state/GenerationsContext";
 import { haptic, hapticNotify } from "../telegram/webapp";
 
 interface Props {
@@ -18,48 +19,52 @@ const TOOLS: { id: ToolType; title: string; hint: string }[] = [
 
 const MAX_FILE_MB = 12;
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const COST_PER_GENERATION = 1;
 
 export function Create({ navigate }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [tool, setTool] = useState<ToolType>("enhance");
   const [style, setStyle] = useState<string>(STYLE_PRESETS[0].id);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const { credits, createGeneration } = useGenerations();
 
-  function handleFile(file: File | undefined) {
-    if (!file) return;
+  function handleFile(selected: File | undefined) {
+    if (!selected) return;
     setError(null);
 
-    if (!ACCEPTED_TYPES.includes(file.type)) {
+    if (!ACCEPTED_TYPES.includes(selected.type)) {
       setError("Поддерживаются только JPG, PNG или WEBP.");
       return;
     }
-    if (file.size > MAX_FILE_MB * 1024 * 1024) {
+    if (selected.size > MAX_FILE_MB * 1024 * 1024) {
       setError(`Файл слишком большой. Максимум ${MAX_FILE_MB} МБ.`);
       return;
     }
 
-    const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
+    setFile(selected);
+    setPreviewUrl(URL.createObjectURL(selected));
   }
 
-  function handleGenerate() {
-    if (!previewUrl) {
+  async function handleGenerate() {
+    if (!file) {
       setError("Сначала загрузи фотографию.");
       return;
     }
-    if (!hasEnoughCredits()) {
+    if (credits < COST_PER_GENERATION) {
       setError("Недостаточно кредитов. Пополни баланс на экране Credits.");
       hapticNotify("error");
       return;
     }
 
     setSubmitting(true);
+    setError(null);
     try {
-      const id = createMockGeneration(tool, previewUrl);
+      const gen = await createGeneration(file, tool, tool === "style" ? style : undefined);
       haptic("medium");
-      navigate({ name: "result", generationId: id });
+      navigate({ name: "result", generationId: gen.id });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Не удалось запустить генерацию.");
       hapticNotify("error");
@@ -139,7 +144,7 @@ export function Create({ navigate }: Props) {
       <div className={styles.spacer} />
 
       <button className={styles.generateBtn} onClick={handleGenerate} disabled={submitting}>
-        {submitting ? "Запускаем…" : "Generate · 1 кредит"}
+        {submitting ? "Загружаем и запускаем…" : "Generate · 1 кредит"}
       </button>
     </div>
   );

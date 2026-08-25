@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import styles from "./Result.module.css";
 import type { Screen } from "../types/nav";
 import { TOOL_LABELS } from "../types/nav";
-import { getGeneration, subscribe, type Generation } from "../api/mockGenerations";
+import { useGenerations } from "../state/GenerationsContext";
 import { haptic, hapticNotify } from "../telegram/webapp";
 
 interface Props {
@@ -10,17 +10,44 @@ interface Props {
   navigate: (s: Screen) => void;
 }
 
+const POLL_INTERVAL_MS = 1500;
+
 export function Result({ generationId, navigate }: Props) {
-  const [gen, setGen] = useState<Generation | undefined>(() => getGeneration(generationId));
+  const { getCached, pollGeneration } = useGenerations();
+  const gen = getCached(generationId);
+  const notifiedRef = useRef(false);
 
   useEffect(() => {
-    const unsub = subscribe(() => {
-      const updated = getGeneration(generationId);
-      setGen(updated);
-      if (updated?.status === "completed") hapticNotify("success");
-      if (updated?.status === "failed") hapticNotify("error");
-    });
-    return unsub;
+    notifiedRef.current = false;
+  }, [generationId]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function tick() {
+      try {
+        const updated = await pollGeneration(generationId);
+        if (cancelled) return;
+
+        if (!notifiedRef.current && (updated.status === "completed" || updated.status === "failed")) {
+          notifiedRef.current = true;
+          hapticNotify(updated.status === "completed" ? "success" : "error");
+        }
+        if (updated.status === "pending" || updated.status === "processing") {
+          setTimeout(tick, POLL_INTERVAL_MS);
+        }
+      } catch {
+        // Transient network hiccup - try again on the next tick instead
+        // of leaving the screen stuck.
+        if (!cancelled) setTimeout(tick, POLL_INTERVAL_MS);
+      }
+    }
+
+    tick();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [generationId]);
 
   if (!gen) {
@@ -32,10 +59,12 @@ export function Result({ generationId, navigate }: Props) {
           </button>
           <h1 className={styles.title}>Result</h1>
         </div>
-        <p>Генерация не найдена.</p>
+        <p>Загружаем…</p>
       </div>
     );
   }
+
+  const isCaption = gen.type === "caption";
 
   return (
     <div className={styles.wrap}>
@@ -61,14 +90,24 @@ export function Result({ generationId, navigate }: Props) {
         {gen.status === "pending" && "В очереди"}
       </div>
 
+      {gen.status === "failed" && gen.error_message && (
+        <div className={styles.errorText}>{gen.error_message}</div>
+      )}
+
       <div className={styles.imageFrame}>
         {gen.status === "processing" || gen.status === "pending" ? (
           <div className={styles.processingOverlay}>
             <div className={styles.spinner} />
             <span className={styles.processingLabel}>Vireli обрабатывает фото…</span>
           </div>
+        ) : isCaption ? (
+          gen.status === "completed" ? (
+            <p className={styles.captionCard}>{gen.output_text}</p>
+          ) : (
+            <img src={gen.input_url ?? undefined} alt="Исходное фото" className={styles.image} />
+          )
         ) : (
-          <img src={gen.outputPreviewUrl ?? gen.inputPreviewUrl} alt="Результат обработки" className={styles.image} />
+          <img src={gen.output_url ?? gen.input_url ?? undefined} alt="Результат обработки" className={styles.image} />
         )}
       </div>
 
@@ -90,13 +129,15 @@ export function Result({ generationId, navigate }: Props) {
               <button className={styles.secondaryBtn} onClick={() => navigate({ name: "my-creations" })}>
                 Save
               </button>
-              <a
-                className={styles.secondaryBtn}
-                href={gen.outputPreviewUrl ?? gen.inputPreviewUrl ?? undefined}
-                download={`vireli-${gen.id}.png`}
-              >
-                Download
-              </a>
+              {!isCaption && (
+                <a
+                  className={styles.secondaryBtn}
+                  href={gen.output_url ?? gen.input_url ?? undefined}
+                  download={`vireli-${gen.id}.png`}
+                >
+                  Download
+                </a>
+              )}
             </div>
           </>
         )}
